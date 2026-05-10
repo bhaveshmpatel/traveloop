@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Search, Globe, Star, MapPin, Filter, Loader2 } from "lucide-react";
 
 interface City {
@@ -78,8 +79,9 @@ function CitiesContent() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cities.map((city, i) => (
-            <motion.div key={city.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              className="group bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all duration-300">
+            <motion.div key={city.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+            <Link href={`/explore/cities/${city.id}`}
+              className="group block bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all duration-300">
               <div className="relative h-44 bg-gradient-to-br from-primary/20 to-accent/20">
                 {city.imageUrl && (
                   <img src={city.imageUrl} alt={city.name} className="w-full h-full object-cover" />
@@ -98,6 +100,7 @@ function CitiesContent() {
                 {city.description && <p className="mt-2 text-sm text-text-secondary line-clamp-2">{city.description}</p>}
                 <div className="mt-3 text-xs text-text-muted">{costLabel(city.costIndex)}</div>
               </div>
+            </Link>
             </motion.div>
           ))}
         </div>

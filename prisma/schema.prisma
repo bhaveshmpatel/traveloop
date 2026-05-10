@@ -147,6 +147,7 @@ model Activity {
   city           City           @relation(fields: [cityId], references: [id], onDelete: Cascade)
   stopActivities StopActivity[]
 
+  @@unique([name, cityId])
   @@index([cityId])
   @@index([type])
   @@map("activities")

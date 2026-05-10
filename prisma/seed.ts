@@ -106,14 +106,99 @@ async function main() {
     // Marrakech
     { cityName: "Marrakech", name: "Jemaa el-Fnaa Square", type: "CULTURE" as const, description: "Bustling main square with performers and food stalls.", cost: 0, duration: 3 },
     { cityName: "Marrakech", name: "Sahara Desert Excursion", type: "ADVENTURE" as const, description: "Overnight camel trek into the Sahara dunes.", cost: 80, duration: 24 },
+    { cityName: "Marrakech", name: "Moroccan Cooking Class", type: "FOOD" as const, description: "Learn tagine, couscous, and mint tea preparation.", cost: 40, duration: 3 },
+    // Singapore
+    { cityName: "Singapore", name: "Gardens by the Bay", type: "NATURE" as const, description: "Futuristic Supertree Grove and Cloud Forest dome.", cost: 20, duration: 3 },
+    { cityName: "Singapore", name: "Hawker Centre Food Trail", type: "FOOD" as const, description: "Chilli crab, laksa, and Hainanese chicken rice.", cost: 15, duration: 3 },
+    { cityName: "Singapore", name: "Marina Bay Sands SkyPark", type: "SIGHTSEEING" as const, description: "Iconic rooftop with infinity pool views.", cost: 25, duration: 2 },
+    { cityName: "Singapore", name: "Sentosa Island", type: "ADVENTURE" as const, description: "Beach, Universal Studios, and luge rides.", cost: 50, duration: 6 },
+    // Mumbai
+    { cityName: "Mumbai", name: "Gateway of India & Colaba", type: "SIGHTSEEING" as const, description: "Iconic waterfront arch and vibrant market district.", cost: 0, duration: 2 },
+    { cityName: "Mumbai", name: "Mumbai Street Food Tour", type: "FOOD" as const, description: "Vada pav, pav bhaji, pani puri, and more.", cost: 15, duration: 3 },
+    { cityName: "Mumbai", name: "Bollywood Studio Tour", type: "CULTURE" as const, description: "Behind-the-scenes look at Film City.", cost: 25, duration: 4 },
+    { cityName: "Mumbai", name: "Elephanta Caves", type: "CULTURE" as const, description: "Ancient rock-cut Hindu temples on an island.", cost: 10, duration: 4 },
+    // Kyoto
+    { cityName: "Kyoto", name: "Fushimi Inari Shrine", type: "CULTURE" as const, description: "Thousands of vermillion torii gates up the mountain.", cost: 0, duration: 3 },
+    { cityName: "Kyoto", name: "Arashiyama Bamboo Grove", type: "NATURE" as const, description: "Ethereal bamboo forest with monkey park.", cost: 0, duration: 3 },
+    { cityName: "Kyoto", name: "Traditional Tea Ceremony", type: "CULTURE" as const, description: "Authentic matcha ceremony in a historic teahouse.", cost: 30, duration: 1.5 },
+    { cityName: "Kyoto", name: "Kaiseki Dining Experience", type: "FOOD" as const, description: "Multi-course traditional Japanese haute cuisine.", cost: 80, duration: 2 },
+    // Seoul
+    { cityName: "Seoul", name: "Gyeongbokgung Palace", type: "CULTURE" as const, description: "Grand Joseon-era palace with guard changing ceremony.", cost: 3, duration: 3 },
+    { cityName: "Seoul", name: "Myeongdong Street Food", type: "FOOD" as const, description: "Korean fried chicken, tteokbokki, and hotteok.", cost: 15, duration: 2 },
+    { cityName: "Seoul", name: "N Seoul Tower", type: "SIGHTSEEING" as const, description: "Panoramic city views from Namsan Mountain.", cost: 12, duration: 2 },
+    { cityName: "Seoul", name: "Bukchon Hanok Village", type: "CULTURE" as const, description: "Traditional Korean houses between two palaces.", cost: 0, duration: 2 },
+    // Hanoi
+    { cityName: "Hanoi", name: "Old Quarter Walking Tour", type: "SIGHTSEEING" as const, description: "36 ancient streets filled with shops and temples.", cost: 0, duration: 3 },
+    { cityName: "Hanoi", name: "Pho & Bun Cha Tasting", type: "FOOD" as const, description: "Vietnam's most iconic noodle soups and grilled pork.", cost: 10, duration: 2 },
+    { cityName: "Hanoi", name: "Ha Long Bay Day Trip", type: "ADVENTURE" as const, description: "Cruise through limestone karsts and emerald waters.", cost: 65, duration: 10 },
+    { cityName: "Hanoi", name: "Water Puppet Show", type: "CULTURE" as const, description: "Traditional Vietnamese puppetry on water stage.", cost: 5, duration: 1 },
+    // London
+    { cityName: "London", name: "Tower of London", type: "CULTURE" as const, description: "Historic castle with Crown Jewels exhibition.", cost: 35, duration: 3 },
+    { cityName: "London", name: "British Museum", type: "CULTURE" as const, description: "World-class collection spanning 2 million years.", cost: 0, duration: 4 },
+    { cityName: "London", name: "Borough Market Food Tour", type: "FOOD" as const, description: "London's oldest food market with artisan vendors.", cost: 30, duration: 3 },
+    { cityName: "London", name: "London Eye", type: "SIGHTSEEING" as const, description: "Giant observation wheel on the Thames.", cost: 30, duration: 1.5 },
+    { cityName: "London", name: "West End Theatre Show", type: "CULTURE" as const, description: "World-famous musical theatre district.", cost: 80, duration: 3 },
+    // Amsterdam
+    { cityName: "Amsterdam", name: "Anne Frank House", type: "CULTURE" as const, description: "Moving museum in the famous WWII hiding place.", cost: 16, duration: 2 },
+    { cityName: "Amsterdam", name: "Van Gogh Museum", type: "CULTURE" as const, description: "World's largest Van Gogh collection.", cost: 20, duration: 3 },
+    { cityName: "Amsterdam", name: "Canal Cruise", type: "SIGHTSEEING" as const, description: "Glide through UNESCO-listed canals.", cost: 18, duration: 1.5 },
+    { cityName: "Amsterdam", name: "Jordaan Food Walk", type: "FOOD" as const, description: "Dutch cheese, stroopwafels, and herring tasting.", cost: 35, duration: 3 },
+    // Zurich
+    { cityName: "Zurich", name: "Old Town (Altstadt) Walk", type: "SIGHTSEEING" as const, description: "Medieval lanes, churches, and lakefront views.", cost: 0, duration: 2 },
+    { cityName: "Zurich", name: "Swiss Chocolate Tasting", type: "FOOD" as const, description: "Premium Swiss chocolate factory and tasting tour.", cost: 30, duration: 2 },
+    { cityName: "Zurich", name: "Lake Zurich Cruise", type: "NATURE" as const, description: "Scenic boat ride with Alpine panoramas.", cost: 25, duration: 2 },
+    // Prague
+    { cityName: "Prague", name: "Prague Castle", type: "CULTURE" as const, description: "Largest ancient castle complex in the world.", cost: 15, duration: 3 },
+    { cityName: "Prague", name: "Charles Bridge Walk", type: "SIGHTSEEING" as const, description: "Iconic Gothic bridge with 30 Baroque statues.", cost: 0, duration: 1 },
+    { cityName: "Prague", name: "Czech Beer Tasting", type: "FOOD" as const, description: "Sample pilsners and craft brews in historic pubs.", cost: 20, duration: 3 },
+    { cityName: "Prague", name: "Old Town Square", type: "SIGHTSEEING" as const, description: "Astronomical clock and stunning medieval architecture.", cost: 0, duration: 2 },
+    // Istanbul
+    { cityName: "Istanbul", name: "Hagia Sophia", type: "CULTURE" as const, description: "1,500-year-old architectural masterpiece.", cost: 25, duration: 2 },
+    { cityName: "Istanbul", name: "Grand Bazaar Shopping", type: "SHOPPING" as const, description: "4,000+ shops in one of world's oldest markets.", cost: 0, duration: 3 },
+    { cityName: "Istanbul", name: "Bosphorus Cruise", type: "SIGHTSEEING" as const, description: "Sail between Europe and Asia.", cost: 15, duration: 2 },
+    { cityName: "Istanbul", name: "Turkish Breakfast Feast", type: "FOOD" as const, description: "Elaborate spread of cheese, eggs, simit, and tea.", cost: 15, duration: 2 },
+    // Cancún
+    { cityName: "Cancún", name: "Chichén Itzá Day Trip", type: "CULTURE" as const, description: "Ancient Mayan pyramid — one of the New Seven Wonders.", cost: 60, duration: 10 },
+    { cityName: "Cancún", name: "Snorkeling in Cenotes", type: "ADVENTURE" as const, description: "Swim in crystal-clear underground sinkholes.", cost: 40, duration: 4 },
+    { cityName: "Cancún", name: "Tacos & Ceviche Tour", type: "FOOD" as const, description: "Authentic Yucatecan flavors and seafood.", cost: 25, duration: 3 },
+    // Rio de Janeiro
+    { cityName: "Rio de Janeiro", name: "Christ the Redeemer", type: "SIGHTSEEING" as const, description: "Iconic statue atop Corcovado mountain.", cost: 20, duration: 3 },
+    { cityName: "Rio de Janeiro", name: "Copacabana & Ipanema", type: "NATURE" as const, description: "World-famous beaches with vibrant atmosphere.", cost: 0, duration: 4 },
+    { cityName: "Rio de Janeiro", name: "Sugarloaf Cable Car", type: "SIGHTSEEING" as const, description: "Cable car ride with panoramic bay views.", cost: 25, duration: 2 },
+    { cityName: "Rio de Janeiro", name: "Feijoada Cooking Class", type: "FOOD" as const, description: "Learn Brazil's national black bean stew.", cost: 35, duration: 3 },
+    // Buenos Aires
+    { cityName: "Buenos Aires", name: "Tango Show & Dinner", type: "CULTURE" as const, description: "Authentic tango performance with Argentine cuisine.", cost: 60, duration: 3 },
+    { cityName: "Buenos Aires", name: "La Boca Neighborhood", type: "SIGHTSEEING" as const, description: "Colorful Caminito street and football culture.", cost: 0, duration: 2 },
+    { cityName: "Buenos Aires", name: "Asado (BBQ) Experience", type: "FOOD" as const, description: "Argentine grill master steak experience.", cost: 40, duration: 3 },
+    // San Francisco
+    { cityName: "San Francisco", name: "Golden Gate Bridge Walk", type: "SIGHTSEEING" as const, description: "Walk across the iconic 1.7-mile suspension bridge.", cost: 0, duration: 2 },
+    { cityName: "San Francisco", name: "Alcatraz Island Tour", type: "CULTURE" as const, description: "Visit the infamous former federal prison.", cost: 40, duration: 3 },
+    { cityName: "San Francisco", name: "Fisherman's Wharf", type: "FOOD" as const, description: "Clam chowder, sourdough bread, and sea lions.", cost: 25, duration: 3 },
+    // Nairobi
+    { cityName: "Nairobi", name: "Nairobi National Park Safari", type: "ADVENTURE" as const, description: "See lions and rhinos with city skyline backdrop.", cost: 50, duration: 4 },
+    { cityName: "Nairobi", name: "Giraffe Centre", type: "NATURE" as const, description: "Hand-feed endangered Rothschild giraffes.", cost: 15, duration: 2 },
+    { cityName: "Nairobi", name: "Karen Blixen Museum", type: "CULTURE" as const, description: "Home of 'Out of Africa' author.", cost: 10, duration: 2 },
+    // Queenstown
+    { cityName: "Queenstown", name: "Bungee Jumping", type: "ADVENTURE" as const, description: "Kawarau Bridge — birthplace of commercial bungee.", cost: 150, duration: 2 },
+    { cityName: "Queenstown", name: "Milford Sound Cruise", type: "NATURE" as const, description: "Stunning fjord cruise through Fiordland.", cost: 80, duration: 8 },
+    { cityName: "Queenstown", name: "Skyline Gondola & Luge", type: "ADVENTURE" as const, description: "Gondola ride and luge track with mountain views.", cost: 45, duration: 3 },
+    // Petra
+    { cityName: "Petra", name: "The Treasury (Al-Khazneh)", type: "CULTURE" as const, description: "Walk through the Siq to the rose-red carved facade.", cost: 50, duration: 4 },
+    { cityName: "Petra", name: "Monastery Hike", type: "ADVENTURE" as const, description: "800+ steps to the massive carved monastery.", cost: 0, duration: 3 },
+    { cityName: "Petra", name: "Petra by Night", type: "CULTURE" as const, description: "Candlelit walk through the Siq to illuminated Treasury.", cost: 17, duration: 2 },
+    // Dubai extras
+    { cityName: "Dubai", name: "Old Dubai & Spice Souk", type: "CULTURE" as const, description: "Traditional souks and abra rides across Dubai Creek.", cost: 5, duration: 3 },
+    { cityName: "Dubai", name: "Dubai Frame", type: "SIGHTSEEING" as const, description: "150m picture-frame structure with glass floor walkway.", cost: 15, duration: 1.5 },
   ];
 
   let activityCount = 0;
   for (const act of activitiesData) {
     const cityId = cityMap.get(act.cityName);
     if (cityId) {
-      await prisma.activity.create({
-        data: {
+      await prisma.activity.upsert({
+        where: { name_cityId: { name: act.name, cityId } },
+        update: {},
+        create: {
           cityId,
           name: act.name,
           type: act.type,
