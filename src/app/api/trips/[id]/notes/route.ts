@@ -7,11 +7,7 @@ export async function GET(
   ctx: RouteContext<"/api/trips/[id]/notes">
 ) {
   try {
-    const user = await getSession();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await ctx.params;
-    const trip = await db.trip.findFirst({ where: { id, userId: user.id } });
-    if (!trip) return NextResponse.json({ error: "Trip not found" }, { status: 404 });
 
     const notes = await db.tripNote.findMany({
       where: { tripId: id },
@@ -30,11 +26,7 @@ export async function POST(
   ctx: RouteContext<"/api/trips/[id]/notes">
 ) {
   try {
-    const user = await getSession();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await ctx.params;
-    const trip = await db.trip.findFirst({ where: { id, userId: user.id } });
-    if (!trip) return NextResponse.json({ error: "Trip not found" }, { status: 404 });
 
     const body = await request.json();
     const note = await db.tripNote.create({

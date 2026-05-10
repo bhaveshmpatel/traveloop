@@ -7,13 +7,14 @@ export async function GET(
   ctx: RouteContext<"/api/trips/[id]/expenses">
 ) {
   try {
-    const user = await getSession();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await ctx.params;
-    const trip = await db.trip.findFirst({
-      where: { id, userId: user.id },
+    const trip = await db.trip.findUnique({
+      where: { id },
       include: {
-        stops: { include: { city: true, activities: { include: { activity: true } } } },
+        stops: {
+          include: { city: true, activities: { include: { activity: true } } },
+          orderBy: { order: "asc" },
+        },
         expenses: { orderBy: { date: "desc" } },
       },
     });
