@@ -73,6 +73,7 @@ model Trip {
   stops        TripStop[]
   packingItems PackingItem[]
   notes        TripNote[]
+  expenses     Expense[]
   communityPosts CommunityPost[]
 
   @@index([userId])
@@ -170,7 +171,9 @@ model TripNote {
   id        String   @id @default(cuid())
   tripId    String
   stopId    String?
+  title     String   @default("")
   content   String
+  dayNumber Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -179,6 +182,21 @@ model TripNote {
 
   @@index([tripId])
   @@map("trip_notes")
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  tripId      String
+  category    String   @default("OTHER")
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  isPaid      Boolean  @default(false)
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@map("expenses")
 }
 
 model CommunityPost {

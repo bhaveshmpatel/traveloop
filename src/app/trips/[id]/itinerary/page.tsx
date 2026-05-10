@@ -176,13 +176,21 @@ export default function ItineraryBuilderPage() {
           <h1 className="text-3xl font-bold font-[var(--font-outfit)] text-text-primary">{trip.name}</h1>
           <p className="text-text-secondary mt-1">{days.length} days · {trip.stops.length} cities</p>
         </motion.div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link href={`/trips/${tripId}/notes`}
+            className="flex items-center gap-2 px-4 py-2.5 border border-border text-text-secondary font-medium rounded-xl hover:text-primary hover:border-primary/30 transition-all text-sm">
+            📓 Journal
+          </Link>
           <Link href={`/trips/${tripId}/packing`}
-            className="flex items-center gap-2 px-5 py-3 border border-border text-text-secondary font-medium rounded-xl hover:text-primary hover:border-primary/30 transition-all text-sm">
-            🧳 Packing List
+            className="flex items-center gap-2 px-4 py-2.5 border border-border text-text-secondary font-medium rounded-xl hover:text-primary hover:border-primary/30 transition-all text-sm">
+            🧳 Packing
+          </Link>
+          <Link href={`/trips/${tripId}/expenses`}
+            className="flex items-center gap-2 px-4 py-2.5 border border-border text-text-secondary font-medium rounded-xl hover:text-primary hover:border-primary/30 transition-all text-sm">
+            💰 Expenses
           </Link>
           <button onClick={handleSave} disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-xl shadow-lg shadow-primary/25 hover:scale-105 transition-all">
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-xl shadow-lg shadow-primary/25 hover:scale-105 transition-all text-sm">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
           </button>
         </div>
