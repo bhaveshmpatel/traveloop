@@ -5,7 +5,7 @@ import { ArrowRight, Play, MapPin, Globe, Compass } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function HeroSection() {
+export default function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
   return (
     <section
       id="hero"
@@ -121,7 +121,7 @@ export default function HeroSection() {
             className="mt-10 flex flex-col sm:flex-row gap-4"
           >
             <Link
-              href="/auth"
+              href={isLoggedIn ? "/dashboard" : "/auth"}
               className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary to-primary-light rounded-2xl shadow-2xl shadow-primary/30 hover:shadow-primary/50 hover:scale-105 transition-all duration-300"
             >
               Start Planning

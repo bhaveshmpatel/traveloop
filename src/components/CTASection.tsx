@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-export default function CTASection() {
+export default function CTASection({ isLoggedIn }: { isLoggedIn?: boolean }) {
   return (
     <section className="py-24 sm:py-32 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -60,15 +60,17 @@ export default function CTASection() {
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/auth"
+                href={isLoggedIn ? "/dashboard" : "/auth"}
                 className="group inline-flex items-center gap-2 px-8 py-4 text-base font-semibold bg-white text-primary rounded-2xl shadow-2xl shadow-black/20 hover:shadow-black/30 hover:scale-105 transition-all duration-300"
               >
-                Create Free Account
+                {isLoggedIn ? "Go to Dashboard" : "Create Free Account"}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <span className="text-white/50 text-sm">
-                No credit card required
-              </span>
+              {!isLoggedIn && (
+                <span className="text-white/50 text-sm">
+                  No credit card required
+                </span>
+              )}
             </div>
           </div>
         </motion.div>

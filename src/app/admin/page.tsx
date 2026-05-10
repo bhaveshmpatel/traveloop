@@ -32,6 +32,7 @@ export default function AdminPage() {
   const [sortBy, setSortBy] = useState("default");
   const [filterVal, setFilterVal] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+  const [showAddAct, setShowAddAct] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/stats").then(r => r.json()).then(d => {
@@ -41,7 +42,14 @@ export default function AdminPage() {
     }).catch(() => { setError("Failed to load"); setLoading(false); });
   }, []);
 
-  useEffect(() => { if (tab === "users") fetchUsers(); if (tab === "cities") fetchCities(); if (tab === "activities") fetchActs(); }, [tab]);
+  useEffect(() => { 
+    if (tab === "users") fetchUsers(); 
+    if (tab === "cities") fetchCities(); 
+    if (tab === "activities") {
+      fetchActs();
+      if (cities.length === 0) fetchCities();
+    }
+  }, [tab]);
 
   const fetchUsers = () => fetch("/api/admin/users").then(r=>r.json()).then(d=>setUsers(d.users||[]));
   const fetchCities = () => fetch("/api/admin/cities").then(r=>r.json()).then(d=>setCities(d.cities||[]));
@@ -278,7 +286,9 @@ export default function AdminPage() {
             <select value={sortBy} onChange={e=>setSortBy(e.target.value)} className="px-3 py-2.5 bg-surface border border-border rounded-xl text-sm text-text-primary appearance-none cursor-pointer">
               <option value="default">Default</option><option value="name">Name</option><option value="cost">Cost</option><option value="duration">Duration</option>
             </select>
+            <button onClick={()=>setShowAddAct(!showAddAct)} className="flex items-center gap-1.5 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:scale-105 transition-all"><Plus className="w-4 h-4" />Add</button>
           </div>
+          {showAddAct && <AddActivityForm ic={ic} cities={cities} onDone={()=>{setShowAddAct(false);fetchActs();}} />}
           <div className="bg-surface border border-border rounded-2xl overflow-hidden">
             <table className="w-full text-sm"><thead><tr className="border-b border-border bg-surface-elevated/50">
               <th className="px-4 py-3 text-left text-xs font-semibold text-text-muted">Activity</th>
@@ -307,18 +317,60 @@ export default function AdminPage() {
 }
 
 function AddCityForm({ ic, onDone }: { ic: string; onDone: () => void }) {
-  const [name,setName]=useState(""); const [country,setCountry]=useState(""); const [region,setRegion]=useState(""); const [saving,setSaving]=useState(false);
+  const [name,setName]=useState(""); const [country,setCountry]=useState(""); const [region,setRegion]=useState(""); 
+  const [description,setDescription]=useState(""); const [imageUrl,setImageUrl]=useState(""); const [saving,setSaving]=useState(false);
   const submit = async () => {
     if(!name||!country) return; setSaving(true);
-    await fetch("/api/admin/cities",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,country,region:region||"Other"})});
+    await fetch("/api/admin/cities",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,country,region:region||"Other",description,imageUrl})});
     setSaving(false); onDone();
   };
   return (
-    <div className="bg-surface border border-border rounded-2xl p-4 mb-4 flex gap-3 flex-wrap">
-      <input value={name} onChange={e=>setName(e.target.value)} placeholder="City name" className={ic+" flex-1 min-w-[150px]"} />
-      <input value={country} onChange={e=>setCountry(e.target.value)} placeholder="Country" className={ic+" flex-1 min-w-[150px]"} />
-      <input value={region} onChange={e=>setRegion(e.target.value)} placeholder="Region" className={ic+" w-32"} />
-      <button onClick={submit} disabled={saving} className="px-5 py-3 bg-primary text-white rounded-xl text-sm font-medium disabled:opacity-50">{saving?"...":"Add City"}</button>
+    <div className="bg-surface border border-border rounded-2xl p-4 mb-4 flex gap-3 flex-col">
+      <div className="flex gap-3 flex-wrap">
+        <input value={name} onChange={e=>setName(e.target.value)} placeholder="City name" className={ic+" flex-1 min-w-[150px]"} />
+        <input value={country} onChange={e=>setCountry(e.target.value)} placeholder="Country" className={ic+" flex-1 min-w-[150px]"} />
+        <input value={region} onChange={e=>setRegion(e.target.value)} placeholder="Region" className={ic+" w-32"} />
+      </div>
+      <div className="flex gap-3 flex-wrap">
+        <input value={imageUrl} onChange={e=>setImageUrl(e.target.value)} placeholder="Image URL (e.g. Unsplash)" className={ic+" flex-1 min-w-[200px]"} />
+        <input value={description} onChange={e=>setDescription(e.target.value)} placeholder="About city (Description)" className={ic+" flex-[2] min-w-[200px]"} />
+      </div>
+      <div className="flex justify-end">
+        <button onClick={submit} disabled={saving} className="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium disabled:opacity-50">{saving?"Saving...":"Add City"}</button>
+      </div>
+    </div>
+  );
+}
+
+function AddActivityForm({ ic, cities, onDone }: { ic: string; cities: CityRow[]; onDone: () => void }) {
+  const [name,setName]=useState(""); const [cityId,setCityId]=useState(""); const [type,setType]=useState("SIGHTSEEING");
+  const [cost,setCost]=useState(""); const [duration,setDuration]=useState(""); const [description,setDescription]=useState("");
+  const [saving,setSaving]=useState(false);
+  const submit = async () => {
+    if(!name||!cityId) return; setSaving(true);
+    await fetch("/api/admin/activities",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,cityId,type,cost:parseFloat(cost),duration:parseFloat(duration),description})});
+    setSaving(false); onDone();
+  };
+  return (
+    <div className="bg-surface border border-border rounded-2xl p-4 mb-4 flex gap-3 flex-col">
+      <div className="flex gap-3 flex-wrap">
+        <input value={name} onChange={e=>setName(e.target.value)} placeholder="Activity name" className={ic+" flex-[2] min-w-[200px]"} />
+        <select value={cityId} onChange={e=>setCityId(e.target.value)} className={ic+" flex-1 min-w-[150px]"}>
+          <option value="">Select City</option>
+          {cities.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        <select value={type} onChange={e=>setType(e.target.value)} className={ic+" flex-1 min-w-[150px]"}>
+          {["SIGHTSEEING","CULTURE","FOOD","NATURE","ADVENTURE","SHOPPING","RELAXATION"].map(t=><option key={t} value={t}>{t}</option>)}
+        </select>
+      </div>
+      <div className="flex gap-3 flex-wrap">
+        <input type="number" value={cost} onChange={e=>setCost(e.target.value)} placeholder="Cost ($)" className={ic+" flex-1 min-w-[100px]"} />
+        <input type="number" value={duration} onChange={e=>setDuration(e.target.value)} placeholder="Duration (hours)" className={ic+" flex-1 min-w-[100px]"} />
+        <input value={description} onChange={e=>setDescription(e.target.value)} placeholder="About activity (Description)" className={ic+" flex-[3] min-w-[200px]"} />
+      </div>
+      <div className="flex justify-end">
+        <button onClick={submit} disabled={saving} className="px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium disabled:opacity-50">{saving?"Saving...":"Add Activity"}</button>
+      </div>
     </div>
   );
 }
