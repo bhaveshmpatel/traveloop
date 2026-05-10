@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
@@ -10,39 +11,122 @@ import {
   User,
   ArrowRight,
   Plane,
+  Phone,
+  MapPin,
+  Globe,
+  Camera,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function AuthPage() {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState("");
+
+  // Login fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+
+  // Signup-only fields
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
+  const clearError = (field: string) => {
+    if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
+  };
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!isLogin && !name.trim()) newErrors.name = "Name is required";
+
+    if (!isLogin) {
+      if (!firstName.trim()) newErrors.firstName = "First name is required";
+      if (!lastName.trim()) newErrors.lastName = "Last name is required";
+      if (!phone.trim()) newErrors.phone = "Phone number is required";
+      else if (!/^[+]?[\d\s()-]{7,15}$/.test(phone.trim()))
+        newErrors.phone = "Invalid phone number";
+      if (!city.trim()) newErrors.city = "City is required";
+      if (!country.trim()) newErrors.country = "Country is required";
+    }
+
     if (!email.trim()) newErrors.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       newErrors.email = "Invalid email format";
+
     if (!password.trim()) newErrors.password = "Password is required";
     else if (password.length < 6)
       newErrors.password = "Must be at least 6 characters";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setPhotoPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removePhoto = () => {
+    setPhoto(null);
+    setPhotoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => setLoading(false), 2000);
+    setServerError("");
+
+    try {
+      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/signup";
+      const payload = isLogin
+        ? { email, password }
+        : { firstName, lastName, email, password, phone, city, country };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setServerError(data.error || "Something went wrong");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard");
+    } catch {
+      setServerError("Network error. Please try again.");
+      setLoading(false);
+    }
   };
+
+  const inputClass = (field: string) =>
+    `w-full pl-11 pr-4 py-3 rounded-xl bg-surface border ${
+      errors[field]
+        ? "border-red-400 focus:ring-red-300"
+        : "border-border focus:ring-primary/30 focus:border-primary"
+    } text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 transition-all text-sm`;
 
   return (
     <div className="min-h-screen flex">
@@ -77,7 +161,7 @@ export default function AuthPage() {
       </div>
 
       {/* Right Panel — Form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-background">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-background overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -94,7 +178,7 @@ export default function AuthPage() {
             </span>
           </Link>
 
-          {/* Toggle */}
+          {/* Toggle heading */}
           <div className="mb-8">
             <AnimatePresence mode="wait">
               <motion.div
@@ -156,43 +240,210 @@ export default function AuthPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name field (signup only) */}
+            {/* Server error */}
+            {serverError && (
+              <div className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
+                {serverError}
+              </div>
+            )}
+            {/* Signup-only fields */}
             <AnimatePresence>
               {!isLogin && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.4 }}
                   className="overflow-hidden"
                 >
-                  <label
-                    htmlFor="auth-name"
-                    className="block text-sm font-medium text-text-primary mb-1.5"
-                  >
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
-                    <input
-                      id="auth-name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        if (errors.name) setErrors((p) => ({ ...p, name: "" }));
-                      }}
-                      placeholder="John Doe"
-                      className={`w-full pl-11 pr-4 py-3 rounded-xl bg-surface border ${
-                        errors.name
-                          ? "border-red-400 focus:ring-red-300"
-                          : "border-border focus:ring-primary/30 focus:border-primary"
-                      } text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 transition-all text-sm`}
-                    />
+                  <div className="space-y-4">
+                    {/* Photo Upload (Optional) */}
+                    <div className="flex flex-col items-center gap-3 pb-2">
+                      <div className="relative">
+                        <div
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-20 h-20 rounded-full border-2 border-dashed border-border hover:border-primary/50 bg-surface-elevated flex items-center justify-center cursor-pointer transition-colors duration-200 overflow-hidden group"
+                        >
+                          {photoPreview ? (
+                            <Image
+                              src={photoPreview}
+                              alt="Profile preview"
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <Camera className="w-6 h-6 text-text-muted group-hover:text-primary transition-colors" />
+                          )}
+                        </div>
+                        {photoPreview && (
+                          <button
+                            type="button"
+                            onClick={removePhoto}
+                            className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      <span className="text-xs text-text-muted">
+                        Upload photo{" "}
+                        <span className="text-text-muted/60">(optional)</span>
+                      </span>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        className="hidden"
+                        id="auth-photo"
+                      />
+                    </div>
+
+                    {/* First Name & Last Name — side by side */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label
+                          htmlFor="auth-firstname"
+                          className="block text-sm font-medium text-text-primary mb-1.5"
+                        >
+                          First Name
+                        </label>
+                        <div className="relative">
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
+                          <input
+                            id="auth-firstname"
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => {
+                              setFirstName(e.target.value);
+                              clearError("firstName");
+                            }}
+                            placeholder="John"
+                            className={inputClass("firstName")}
+                          />
+                        </div>
+                        {errors.firstName && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.firstName}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="auth-lastname"
+                          className="block text-sm font-medium text-text-primary mb-1.5"
+                        >
+                          Last Name
+                        </label>
+                        <div className="relative">
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
+                          <input
+                            id="auth-lastname"
+                            type="text"
+                            value={lastName}
+                            onChange={(e) => {
+                              setLastName(e.target.value);
+                              clearError("lastName");
+                            }}
+                            placeholder="Doe"
+                            className={inputClass("lastName")}
+                          />
+                        </div>
+                        {errors.lastName && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.lastName}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Phone Number */}
+                    <div>
+                      <label
+                        htmlFor="auth-phone"
+                        className="block text-sm font-medium text-text-primary mb-1.5"
+                      >
+                        Phone Number
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
+                        <input
+                          id="auth-phone"
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => {
+                            setPhone(e.target.value);
+                            clearError("phone");
+                          }}
+                          placeholder="+91 98765 43210"
+                          className={inputClass("phone")}
+                        />
+                      </div>
+                      {errors.phone && (
+                        <p className="mt-1 text-xs text-red-500">
+                          {errors.phone}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* City & Country — side by side */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label
+                          htmlFor="auth-city"
+                          className="block text-sm font-medium text-text-primary mb-1.5"
+                        >
+                          City
+                        </label>
+                        <div className="relative">
+                          <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
+                          <input
+                            id="auth-city"
+                            type="text"
+                            value={city}
+                            onChange={(e) => {
+                              setCity(e.target.value);
+                              clearError("city");
+                            }}
+                            placeholder="Mumbai"
+                            className={inputClass("city")}
+                          />
+                        </div>
+                        {errors.city && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.city}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="auth-country"
+                          className="block text-sm font-medium text-text-primary mb-1.5"
+                        >
+                          Country
+                        </label>
+                        <div className="relative">
+                          <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-text-muted" />
+                          <input
+                            id="auth-country"
+                            type="text"
+                            value={country}
+                            onChange={(e) => {
+                              setCountry(e.target.value);
+                              clearError("country");
+                            }}
+                            placeholder="India"
+                            className={inputClass("country")}
+                          />
+                        </div>
+                        {errors.country && (
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.country}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  {errors.name && (
-                    <p className="mt-1 text-xs text-red-500">{errors.name}</p>
-                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -213,14 +464,10 @@ export default function AuthPage() {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    if (errors.email) setErrors((p) => ({ ...p, email: "" }));
+                    clearError("email");
                   }}
                   placeholder="you@example.com"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl bg-surface border ${
-                    errors.email
-                      ? "border-red-400 focus:ring-red-300"
-                      : "border-border focus:ring-primary/30 focus:border-primary"
-                  } text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 transition-all text-sm`}
+                  className={inputClass("email")}
                 />
               </div>
               {errors.email && (
@@ -254,8 +501,7 @@ export default function AuthPage() {
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
-                    if (errors.password)
-                      setErrors((p) => ({ ...p, password: "" }));
+                    clearError("password");
                   }}
                   placeholder="••••••••"
                   className={`w-full pl-11 pr-12 py-3 rounded-xl bg-surface border ${

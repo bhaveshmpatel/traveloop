@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TripStatus {
+  PLANNING
+  ONGOING
+  COMPLETED
+}
+
+enum ActivityType {
+  SIGHTSEEING
+  FOOD
+  ADVENTURE
+  CULTURE
+  NATURE
+  SHOPPING
+}
+
+enum PackingCategory {
+  CLOTHING
+  DOCUMENTS
+  ELECTRONICS
+  TOILETRIES
+  OTHER
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String          @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String          @unique
+  passwordHash String
+  phone        String?
+  city         String?
+  country      String?
+  photoUrl     String?
+  role         UserRole        @default(USER)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  trips          Trip[]
+  communityPosts CommunityPost[]
+  postComments   PostComment[]
+
+  @@map("users")
+}
+
+model Trip {
+  id          String     @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  coverImage  String?
+  startDate   DateTime
+  endDate     DateTime
+  status      TripStatus @default(PLANNING)
+  budget      Float?
+  isPublic    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stops        TripStop[]
+  packingItems PackingItem[]
+  notes        TripNote[]
+  communityPosts CommunityPost[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("trips")
+}
+
+model TripStop {
+  id            String   @id @default(cuid())
+  tripId        String
+  cityId        String
+  arrivalDate   DateTime
+  departureDate DateTime
+  order         Int
+  notes         String?
+
+  trip       Trip           @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  city       City           @relation(fields: [cityId], references: [id])
+  activities StopActivity[]
+  tripNotes  TripNote[]
+
+  @@index([tripId])
+  @@map("trip_stops")
+}
+
+model StopActivity {
+  id            String   @id @default(cuid())
+  stopId        String
+  activityId    String
+  date          DateTime
+  startTime     String?
+  endTime       String?
+  estimatedCost Float?
+  notes         String?
+
+  stop     TripStop @relation(fields: [stopId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id])
+
+  @@index([stopId])
+  @@map("stop_activities")
+}
+
+model City {
+  id          String  @id @default(cuid())
+  name        String
+  country     String
+  region      String
+  costIndex   Float   @default(3)
+  popularity  Int     @default(50)
+  imageUrl    String?
+  description String?
+  latitude    Float?
+  longitude   Float?
+
+  stops      TripStop[]
+  activities Activity[]
+
+  @@unique([name, country])
+  @@map("cities")
+}
+
+model Activity {
+  id          String       @id @default(cuid())
+  cityId      String
+  name        String
+  type        ActivityType
+  description String?
+  cost        Float        @default(0)
+  duration    Float        @default(1)
+  imageUrl    String?
+
+  city           City           @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  stopActivities StopActivity[]
+
+  @@index([cityId])
+  @@index([type])
+  @@map("activities")
+}
+
+model PackingItem {
+  id       String          @id @default(cuid())
+  tripId   String
+  name     String
+  category PackingCategory @default(OTHER)
+  isPacked Boolean         @default(false)
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@map("packing_items")
+}
+
+model TripNote {
+  id        String   @id @default(cuid())
+  tripId    String
+  stopId    String?
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trip Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  stop TripStop? @relation(fields: [stopId], references: [id], onDelete: SetNull)
+
+  @@index([tripId])
+  @@map("trip_notes")
+}
+
+model CommunityPost {
+  id        String   @id @default(cuid())
+  userId    String
+  tripId    String?
+  title     String
+  content   String
+  imageUrl  String?
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip     Trip?         @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  comments PostComment[]
+
+  @@index([userId])
+  @@map("community_posts")
+}
+
+model PostComment {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  post CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("post_comments")
+}
