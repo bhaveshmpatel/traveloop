@@ -27,7 +27,7 @@ interface Trip {
   endDate: string;
   status: string;
   budget: number | null;
-  stops: { city: { name: string; country: string } }[];
+  stops: { city: { name: string; country: string; imageUrl: string | null } }[];
 }
 
 interface User {
@@ -281,9 +281,9 @@ export default function DashboardPage() {
                   >
                     {/* Cover */}
                     <div className="relative h-40 bg-gradient-to-br from-primary/20 to-accent/20">
-                      {trip.coverImage && (
+                      {(trip.coverImage || (trip.stops.length > 0 && trip.stops[0].city.imageUrl)) && (
                         <Image
-                          src={trip.coverImage}
+                          src={trip.coverImage || trip.stops[0].city.imageUrl!}
                           alt={trip.name}
                           fill
                           className="object-cover"
