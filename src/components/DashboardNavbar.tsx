@@ -6,12 +6,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plane, LayoutDashboard, Map, Compass, Users, UserCircle,
-  LogOut, Menu, X, Bell, Sun, Moon, Monitor,
+  LogOut, Menu, X, Bell, Sun, Moon, Monitor, Shield,
 } from "lucide-react";
 
 interface User {
   id: string; firstName: string; lastName: string;
-  email: string; photoUrl: string | null;
+  email: string; photoUrl: string | null; role?: string;
 }
 
 const navLinks = [
@@ -107,6 +107,11 @@ export default function DashboardNavbar() {
                 <link.icon className="w-4 h-4" />{link.label}
               </Link>
             ))}
+            {user?.role === "ADMIN" && (
+              <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-amber-500 hover:text-amber-400 rounded-xl hover:bg-amber-500/5 transition-all duration-200">
+                <Shield className="w-4 h-4" />Admin
+              </Link>
+            )}
           </div>
 
           {/* Right side */}
