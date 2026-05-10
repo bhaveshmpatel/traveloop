@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
-import { Search, Globe, Star, MapPin, Filter } from "lucide-react";
+import { Search, Globe, Star, MapPin, Filter, Loader2 } from "lucide-react";
 
 interface City {
   id: string;
@@ -18,7 +18,7 @@ interface City {
 
 const regionsList = ["All", "Asia", "Europe", "Americas", "Africa", "Oceania", "Middle East"];
 
-export default function CitiesPage() {
+function CitiesContent() {
   const searchParams = useSearchParams();
   const initialRegion = searchParams.get("region") || "";
   const [cities, setCities] = useState<City[]>([]);
@@ -103,5 +103,13 @@ export default function CitiesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CitiesPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+      <CitiesContent />
+    </Suspense>
   );
 }
