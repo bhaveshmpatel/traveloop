@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #fafbfc;
   --foreground: #1a1a2e;
@@ -20,23 +22,21 @@
   --gradient-end: #8b5cf6;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a1a;
-    --foreground: #e2e8f0;
-    --primary: #14b8a6;
-    --primary-light: #5eead4;
-    --primary-dark: #0f766e;
-    --accent: #fb923c;
-    --accent-light: #fdba74;
-    --surface: #111827;
-    --surface-elevated: #1e293b;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --border: #1e293b;
-    --border-light: #334155;
-  }
+.dark {
+  --background: #0a0a1a;
+  --foreground: #e2e8f0;
+  --primary: #14b8a6;
+  --primary-light: #5eead4;
+  --primary-dark: #0f766e;
+  --accent: #fb923c;
+  --accent-light: #fdba74;
+  --surface: #111827;
+  --surface-elevated: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: #1e293b;
+  --border-light: #334155;
 }
 
 @theme inline {
@@ -101,11 +101,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-@media (prefers-color-scheme: dark) {
-  .glass-strong {
-    background: rgba(17, 24, 39, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
+.dark .glass-strong {
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Gradient text utility */
