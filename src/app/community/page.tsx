@@ -3,16 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Heart,
-  MessageCircle,
-  Send,
-  Plus,
-  X,
-  ArrowUpDown,
-  Image as ImageIcon,
-  Link2,
-  Loader2,
-  Users,
+  Heart, MessageCircle, Send, Plus, X, ArrowUpDown,
+  Image as ImageIcon, Link2, Loader2, Users, Search, Filter,
 } from "lucide-react";
 
 interface PostComment {
@@ -47,6 +39,8 @@ export default function CommunityPage() {
   const [sortBy, setSortBy] = useState("recent");
   const [showCreate, setShowCreate] = useState(false);
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [groupBy, setGroupBy] = useState("");
 
   // Create post
   const [newTitle, setNewTitle] = useState("");
@@ -132,20 +126,38 @@ export default function CommunityPage() {
         <p className="mt-2 text-text-secondary">Share your travel experiences and discover others&apos;</p>
       </motion.div>
 
-      {/* Controls */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <ArrowUpDown className="w-4 h-4 text-text-muted" />
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-            className="bg-surface border border-border rounded-xl px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer">
-            {sortOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
+      {/* Search + Controls */}
+      <div className="space-y-3 mb-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search posts..."
+            className="w-full pl-11 pr-4 py-3 bg-surface border border-border rounded-xl text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
         </div>
-        <button onClick={() => setShowCreate(!showCreate)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-xl shadow-lg shadow-primary/25 hover:scale-105 transition-all text-sm">
-          {showCreate ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showCreate ? "Cancel" : "New Post"}
-        </button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <ArrowUpDown className="w-4 h-4 text-text-muted" />
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
+                className="bg-surface border border-border rounded-xl px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer">
+                {sortOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Filter className="w-4 h-4 text-text-muted" />
+              <select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}
+                className="bg-surface border border-border rounded-xl px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer">
+                <option value="">All Posts</option>
+                <option value="withTrip">With Trip</option>
+                <option value="noTrip">General</option>
+              </select>
+            </div>
+          </div>
+          <button onClick={() => setShowCreate(!showCreate)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-xl shadow-lg shadow-primary/25 hover:scale-105 transition-all text-sm">
+            {showCreate ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {showCreate ? "Cancel" : "New Post"}
+          </button>
+        </div>
       </div>
 
       {/* Create post form */}
@@ -176,7 +188,12 @@ export default function CommunityPage() {
       {/* Posts feed */}
       {loading ? (
         <div className="space-y-4">{[...Array(3)].map((_, i) => <div key={i} className="h-48 bg-surface-elevated rounded-2xl animate-pulse" />)}</div>
-      ) : posts.length === 0 ? (
+      ) : (() => {
+        let filtered = posts;
+        if (searchQuery) filtered = filtered.filter((p) => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.content.toLowerCase().includes(searchQuery.toLowerCase()));
+        if (groupBy === "withTrip") filtered = filtered.filter((p) => p.trip);
+        if (groupBy === "noTrip") filtered = filtered.filter((p) => !p.trip);
+        return filtered.length === 0 ? (
         <div className="text-center py-20">
           <Users className="w-16 h-16 mx-auto text-text-muted mb-4" />
           <h3 className="text-xl font-bold text-text-primary mb-2">No posts yet</h3>
@@ -184,7 +201,7 @@ export default function CommunityPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {posts.map((post, i) => (
+          {filtered.map((post, i) => (
             <motion.div key={post.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
               className="bg-surface border border-border rounded-2xl overflow-hidden">
               <div className="p-5">
@@ -254,7 +271,7 @@ export default function CommunityPage() {
             </motion.div>
           ))}
         </div>
-      )}
+      ); })()}
     </div>
   );
 }

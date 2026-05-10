@@ -176,10 +176,16 @@ export default function ItineraryBuilderPage() {
           <h1 className="text-3xl font-bold font-[var(--font-outfit)] text-text-primary">{trip.name}</h1>
           <p className="text-text-secondary mt-1">{days.length} days · {trip.stops.length} cities</p>
         </motion.div>
-        <button onClick={handleSave} disabled={saving}
-          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-xl shadow-lg shadow-primary/25 hover:scale-105 transition-all">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
-        </button>
+        <div className="flex items-center gap-3">
+          <Link href={`/trips/${tripId}/packing`}
+            className="flex items-center gap-2 px-5 py-3 border border-border text-text-secondary font-medium rounded-xl hover:text-primary hover:border-primary/30 transition-all text-sm">
+            🧳 Packing List
+          </Link>
+          <button onClick={handleSave} disabled={saving}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-xl shadow-lg shadow-primary/25 hover:scale-105 transition-all">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
+          </button>
+        </div>
       </div>
 
       {/* Budget overview */}
